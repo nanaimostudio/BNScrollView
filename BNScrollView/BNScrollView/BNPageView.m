@@ -36,7 +36,8 @@
 
 
 -(void)applyViewDataWithHorizontalPage:(int)hPage andVerticalPage:(int)vPage {
-    pageLabel_.text = [NSString stringWithFormat:@"Horizontal:%d, Vertical:%d",hPage,vPage];
+    pageLabel_.text = [NSString stringWithFormat:@"%d:Horizontal, Vertical:%d",hPage,vPage];
+    [self setNeedsDisplay];
 }
 
 @end

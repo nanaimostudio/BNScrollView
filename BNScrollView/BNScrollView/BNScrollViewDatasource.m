@@ -28,8 +28,8 @@
 - (id)init {
     self = [super init];
     if (self) {
-        numberOfHorizontalPages = 4;
-        numberOfVerticalPages = 4;
+        numberOfHorizontalPages = 20;
+        numberOfVerticalPages = 20;
     }
     return self;
 }

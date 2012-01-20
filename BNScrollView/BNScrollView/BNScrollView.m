@@ -96,7 +96,8 @@
     currentView_.verticalPageNumber = 0;
     currentView_.horizontalPageNumber = 0;
     [self setVisibilityAndFrame];
-    
+    [currentView_ applyViewDataWithHorizontalPage:currentView_.horizontalPageNumber andVerticalPage:currentView_.verticalPageNumber];
+
     
 }
 
@@ -114,17 +115,38 @@
 }
 
 #pragma mark - ScrollView Helper
+//Only Load If necessary
 - (void)applyAllViewControllerDataForHorizontalPage:(int) hPage andVeticalPage:(int)vPage{
-    [currentView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage];
+    if (currentView_.horizontalPageNumber != hPage || currentView_.verticalPageNumber != vPage) {
+        [currentView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage];
+    }
     
     if (enabledDirection_ & EnabledScrollDirectionHorizontal) {
-        [leftView_ applyViewDataWithHorizontalPage:hPage-1 andVerticalPage:vPage];
-        [rightView_ applyViewDataWithHorizontalPage:hPage+1 andVerticalPage:vPage];
+        if (leftView_.horizontalPageNumber != hPage -1 || leftView_.verticalPageNumber != vPage) {
+            leftView_.horizontalPageNumber = hPage -1;
+            leftView_.verticalPageNumber = vPage;
+            [leftView_ applyViewDataWithHorizontalPage:hPage-1 andVerticalPage:vPage];
+        }
+        
+        if (rightView_.horizontalPageNumber != hPage + 1 || rightView_.verticalPageNumber != vPage) {
+            rightView_.horizontalPageNumber = hPage + 1;
+            rightView_.verticalPageNumber = vPage;
+            [rightView_ applyViewDataWithHorizontalPage:hPage+1 andVerticalPage:vPage];
+        }
     }
     
     if (enabledDirection_ & EnabledScrollDirectionVertical) {
-        [topView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage-1];
-        [rightView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage+1];
+        if (topView_.horizontalPageNumber != hPage || topView_.verticalPageNumber != vPage -1) {
+            topView_.horizontalPageNumber = hPage;
+            topView_.verticalPageNumber = vPage -1;
+            [topView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage-1];
+        }
+        
+        if (bottomView_.horizontalPageNumber != hPage || bottomView_.verticalPageNumber != vPage+1) {
+            bottomView_.verticalPageNumber = vPage + 1;
+            bottomView_.horizontalPageNumber = hPage;
+            [bottomView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage+1];
+        }
     }
 }
 
@@ -170,13 +192,22 @@
 }
 
 - (void)setVisibilityAndFrame {
-    leftView_.frame = CGRectMake(currentView_.frame.origin.x - scrollViewWidth_, currentView_.frame.origin.y, scrollViewWidth_, scrollViewHeight_);
-    rightView_.frame = CGRectMake(currentView_.frame.origin.x + scrollViewWidth_, currentView_.frame.origin.y, scrollViewWidth_, scrollViewHeight_);
+    leftView_.frame = CGRectMake(currentView_.frame.origin.x - currentView_.frame.size.width, 
+                                 currentView_.frame.origin.y, 
+                                 scrollViewWidth_, scrollViewHeight_);
+    rightView_.frame = CGRectMake(currentView_.frame.origin.x + currentView_.frame.size.width,
+                                  currentView_.frame.origin.y, 
+                                  scrollViewWidth_, 
+                                  scrollViewHeight_);
     topView_.frame = CGRectMake(currentView_.frame.origin.x, 
-                                               currentView_.frame.origin.y-scrollViewHeight_, scrollViewWidth_, scrollViewHeight_);
+                                currentView_.frame.origin.y-currentView_.frame.size.height,
+                                scrollViewWidth_,
+                                scrollViewHeight_);
     
     bottomView_.frame = CGRectMake(currentView_.frame.origin.x, 
-                                                  currentView_.frame.origin.y+scrollViewHeight_, scrollViewWidth_, scrollViewHeight_);
+                                   currentView_.frame.origin.y+currentView_.frame.size.height,
+                                   scrollViewWidth_, 
+                                   scrollViewHeight_);
     
     if (leftView_.frame.origin.x < 0) {
         leftView_.hidden = YES;
@@ -213,14 +244,14 @@
 - (void)setViewcontrollerPosition {
     
     if (direction == LEFT || direction == RIGHT) {
-        if (!isHorizontalEndless && ![self isViewControllerInsideHorizontalViewRect:leftView_]) {
+        if (!isHorizontalEndless && ![self isViewControllerInsideHorizontalViewRect:leftView_] && !rightView_.hidden) {
             //go to next, move prev to next
             
             [self swapForMoveRight];
             [self setVisibilityAndFrame];
         }
         
-        else if (isHorizontalEndless && self.contentOffset.x > scrollViewWidth_ * 1.5 && !rightView_.hidden) {
+        else if (isHorizontalEndless && self.contentOffset.x > scrollViewWidth_ * 1.5) {
             self.contentOffset = CGPointMake(self.contentOffset.x - scrollViewWidth_, self.contentOffset.y);
             [self swapForMoveRight]; 
             currentView_.frame = CGRectMake(currentView_.frame.origin.x - scrollViewWidth_, 
