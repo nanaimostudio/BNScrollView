@@ -7,7 +7,8 @@
 //
 
 #import "BNViewController.h"
-
+#import "BNScrollViewController.h"
+#import "BNPageViewController.h"
 @implementation BNViewController
 
 - (void)didReceiveMemoryWarning
@@ -22,6 +23,10 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    BNScrollViewController *viewController = [[BNScrollViewController alloc] initWithScrollViewWidth:768 scrollViewHeight:1024 isHorizontalEndless:NO isVerticalEndLess:YES enabledScrollDirection:EnabledScrollDirectionVertical | EnabledScrollDirectionHorizontal];
+    //BNPageViewController *viewController = [[BNPageViewController alloc] init];
+    [self pushViewController:viewController animated:YES];
+    [viewController release];
 }
 
 - (void)viewDidUnload

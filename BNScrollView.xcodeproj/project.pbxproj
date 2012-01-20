@@ -16,6 +16,9 @@
 		097DA39314C8EEEF00851D27 /* BNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA39214C8EEEF00851D27 /* BNViewController.m */; };
 		097DA39614C8EEEF00851D27 /* BNViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 097DA39414C8EEEF00851D27 /* BNViewController_iPhone.xib */; };
 		097DA39914C8EEEF00851D27 /* BNViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 097DA39714C8EEEF00851D27 /* BNViewController_iPad.xib */; };
+		097DA3A214C8EFD600851D27 /* BNScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA3A114C8EFD600851D27 /* BNScrollViewController.m */; };
+		097DA3A514C8F21300851D27 /* BNScrollViewDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA3A414C8F21300851D27 /* BNScrollViewDatasource.m */; };
+		097DA3A814C8FEBF00851D27 /* BNPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA3A714C8FEBF00851D27 /* BNPageViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,16 +26,22 @@
 		097DA37F14C8EEEF00851D27 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		097DA38114C8EEEF00851D27 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		097DA38314C8EEEF00851D27 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		097DA38714C8EEEF00851D27 /* BNScrollView-Info.plist */ = {isa = PBXFileReference; path = "BNScrollView-Info.plist"; sourceTree = "<group>"; };
+		097DA38714C8EEEF00851D27 /* BNScrollView-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BNScrollView-Info.plist"; sourceTree = "<group>"; };
 		097DA38914C8EEEF00851D27 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		097DA38B14C8EEEF00851D27 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		097DA38D14C8EEEF00851D27 /* BNScrollView-Prefix.pch */ = {isa = PBXFileReference; path = "BNScrollView-Prefix.pch"; sourceTree = "<group>"; };
-		097DA38E14C8EEEF00851D27 /* BNAppDelegate.h */ = {isa = PBXFileReference; path = BNAppDelegate.h; sourceTree = "<group>"; };
+		097DA38D14C8EEEF00851D27 /* BNScrollView-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BNScrollView-Prefix.pch"; sourceTree = "<group>"; };
+		097DA38E14C8EEEF00851D27 /* BNAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNAppDelegate.h; sourceTree = "<group>"; };
 		097DA38F14C8EEEF00851D27 /* BNAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNAppDelegate.m; sourceTree = "<group>"; };
-		097DA39114C8EEEF00851D27 /* BNViewController.h */ = {isa = PBXFileReference; path = BNViewController.h; sourceTree = "<group>"; };
+		097DA39114C8EEEF00851D27 /* BNViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNViewController.h; sourceTree = "<group>"; };
 		097DA39214C8EEEF00851D27 /* BNViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNViewController.m; sourceTree = "<group>"; };
 		097DA39514C8EEEF00851D27 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BNViewController_iPhone.xib; sourceTree = "<group>"; };
 		097DA39814C8EEEF00851D27 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BNViewController_iPad.xib; sourceTree = "<group>"; };
+		097DA3A014C8EFD600851D27 /* BNScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BNScrollViewController.h; sourceTree = "<group>"; };
+		097DA3A114C8EFD600851D27 /* BNScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BNScrollViewController.m; sourceTree = "<group>"; };
+		097DA3A314C8F21300851D27 /* BNScrollViewDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BNScrollViewDatasource.h; sourceTree = "<group>"; };
+		097DA3A414C8F21300851D27 /* BNScrollViewDatasource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BNScrollViewDatasource.m; sourceTree = "<group>"; };
+		097DA3A614C8FEBF00851D27 /* BNPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; path = BNPageViewController.h; sourceTree = "<group>"; };
+		097DA3A714C8FEBF00851D27 /* BNPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BNPageViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +88,7 @@
 		097DA38514C8EEEF00851D27 /* BNScrollView */ = {
 			isa = PBXGroup;
 			children = (
+				097DA39F14C8EFC600851D27 /* BNScrollView */,
 				097DA38E14C8EEEF00851D27 /* BNAppDelegate.h */,
 				097DA38F14C8EEEF00851D27 /* BNAppDelegate.m */,
 				097DA39114C8EEEF00851D27 /* BNViewController.h */,
@@ -99,6 +109,19 @@
 				097DA38D14C8EEEF00851D27 /* BNScrollView-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		097DA39F14C8EFC600851D27 /* BNScrollView */ = {
+			isa = PBXGroup;
+			children = (
+				097DA3A014C8EFD600851D27 /* BNScrollViewController.h */,
+				097DA3A114C8EFD600851D27 /* BNScrollViewController.m */,
+				097DA3A314C8F21300851D27 /* BNScrollViewDatasource.h */,
+				097DA3A414C8F21300851D27 /* BNScrollViewDatasource.m */,
+				097DA3A614C8FEBF00851D27 /* BNPageViewController.h */,
+				097DA3A714C8FEBF00851D27 /* BNPageViewController.m */,
+			);
+			path = BNScrollView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,6 +190,9 @@
 				097DA38C14C8EEEF00851D27 /* main.m in Sources */,
 				097DA39014C8EEEF00851D27 /* BNAppDelegate.m in Sources */,
 				097DA39314C8EEEF00851D27 /* BNViewController.m in Sources */,
+				097DA3A214C8EFD600851D27 /* BNScrollViewController.m in Sources */,
+				097DA3A514C8F21300851D27 /* BNScrollViewDatasource.m in Sources */,
+				097DA3A814C8FEBF00851D27 /* BNPageViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

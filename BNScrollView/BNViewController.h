@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BNViewController : UIViewController
+@interface BNViewController : UINavigationController
 
 @end
