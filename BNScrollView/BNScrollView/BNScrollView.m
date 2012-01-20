@@ -117,35 +117,56 @@
 #pragma mark - ScrollView Helper
 //Only Load If necessary
 - (void)applyAllViewControllerDataForHorizontalPage:(int) hPage andVeticalPage:(int)vPage{
+    int leftPage = hPage -1;
+    int rightPage = hPage +1;
+    int topPage = vPage -1;
+    int bottomPage = vPage +1;
+    
+    if (leftPage < 0) {
+        leftPage = [datasource_ numberOfHorizontalPages] - 1;
+    }
+    
+    if (rightPage >= [datasource_ numberOfHorizontalPages]) {
+        rightPage = 0;
+    }
+    
+    if (topPage < 0) {
+        topPage = [datasource_ numberOfVerticalPages] - 1;
+    }
+    
+    if (bottomPage >= [datasource_ numberOfVerticalPages]) {
+        bottomPage = 0;
+    }
+    
     if (currentView_.horizontalPageNumber != hPage || currentView_.verticalPageNumber != vPage) {
         [currentView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage];
     }
     
     if (enabledDirection_ & EnabledScrollDirectionHorizontal) {
-        if (leftView_.horizontalPageNumber != hPage -1 || leftView_.verticalPageNumber != vPage) {
-            leftView_.horizontalPageNumber = hPage -1;
+        if (leftView_.horizontalPageNumber != leftPage || leftView_.verticalPageNumber != vPage) {
+            leftView_.horizontalPageNumber = leftPage;
             leftView_.verticalPageNumber = vPage;
-            [leftView_ applyViewDataWithHorizontalPage:hPage-1 andVerticalPage:vPage];
+            [leftView_ applyViewDataWithHorizontalPage:leftPage andVerticalPage:vPage];
         }
         
-        if (rightView_.horizontalPageNumber != hPage + 1 || rightView_.verticalPageNumber != vPage) {
-            rightView_.horizontalPageNumber = hPage + 1;
+        if (rightView_.horizontalPageNumber != rightPage || rightView_.verticalPageNumber != vPage) {
+            rightView_.horizontalPageNumber = rightPage;
             rightView_.verticalPageNumber = vPage;
-            [rightView_ applyViewDataWithHorizontalPage:hPage+1 andVerticalPage:vPage];
+            [rightView_ applyViewDataWithHorizontalPage:rightPage andVerticalPage:vPage];
         }
     }
     
     if (enabledDirection_ & EnabledScrollDirectionVertical) {
-        if (topView_.horizontalPageNumber != hPage || topView_.verticalPageNumber != vPage -1) {
+        if (topView_.horizontalPageNumber != hPage || topView_.verticalPageNumber != topPage) {
             topView_.horizontalPageNumber = hPage;
-            topView_.verticalPageNumber = vPage -1;
-            [topView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage-1];
+            topView_.verticalPageNumber = topPage;
+            [topView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:topPage];
         }
         
-        if (bottomView_.horizontalPageNumber != hPage || bottomView_.verticalPageNumber != vPage+1) {
-            bottomView_.verticalPageNumber = vPage + 1;
+        if (bottomView_.horizontalPageNumber != hPage || bottomView_.verticalPageNumber != bottomPage) {
+            bottomView_.verticalPageNumber = bottomPage;
             bottomView_.horizontalPageNumber = hPage;
-            [bottomView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage+1];
+            [bottomView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:bottomPage];
         }
     }
 }
