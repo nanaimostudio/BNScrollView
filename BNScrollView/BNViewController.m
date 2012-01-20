@@ -98,7 +98,7 @@
     }
     else {
         pageWidth = 768;
-        pageHeight = 1024-44;
+        pageHeight = 200-44;
     }
     switch (indexPath.row) {
         case 0: {

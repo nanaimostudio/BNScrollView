@@ -52,11 +52,14 @@ typedef enum EnabledScrollDirection {
 - (id)initWithScrollViewWidth:(int)aScrollViewWidth scrollViewHeight:(int)aScrollViewHeight isHorizontalEndless:(BOOL)hEndless isVerticalEndLess:(BOOL)vEndless enabledScrollDirection:(EnabledScrollDirection) enabledDirection;
 @end
 
+@protocol BNScrollPageView <NSObject>
+-(void)applyViewDataWithHorizontalPage:(int)hPage andVerticalPage:(int)vPage;
+@end
+
 @protocol BNScrollViewDatasource <NSObject>
 @required
 -(int)numberOfHorizontalPages;
 -(int)numberOfVerticalPages;
+-(UIView<BNScrollPageView>*) resuableScrollPageView;
 @end
-
-
 

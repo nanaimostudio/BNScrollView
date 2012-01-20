@@ -77,7 +77,7 @@
 //    }
     scrollView_.contentSize = CGSizeMake(scrollViewWidth_ * [BNScrollViewDatasource numberOfHorizontalPages], scrollViewHeight_ * [BNScrollViewDatasource numberOfVerticalPages]);
     scrollView_.directionalLockEnabled = YES;
-    scrollView_.backgroundColor = [UIColor clearColor];
+    scrollView_.backgroundColor = [UIColor greenColor];
     scrollView_.scrollEnabled = YES;
     
     if (isHorizontalEndless && isVerticalEndless) {
