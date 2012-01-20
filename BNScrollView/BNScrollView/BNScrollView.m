@@ -6,9 +6,8 @@
 //  Copyright (c) 2012 nanaimostudio.com. All rights reserved.
 //
 
-#import "BNScrollViewController.h"
-#import "BNScrollViewDatasource.h"
-@interface BNScrollViewController (Private)
+#import "BNScrollView.h"
+@interface BNScrollView (Private)<BNScrollViewDatasource>
 -(void) swapForMoveUp;
 -(void) swapForMoveDown;
 -(void) swapForMoveLeft;
@@ -16,13 +15,15 @@
 
 - (void)applyAllViewControllerDataForHorizontalPage:(int) hPage andVeticalPage:(int)vPage;
 - (void)initObjects;
--(void)initViewControllers;
+-(void)initViews;
 
 - (void)setVisibilityAndFrame;
 @end
-@implementation BNScrollViewController 
-@synthesize scrollView = scrollView_;
+@implementation BNScrollView 
 @synthesize enabledDirection = enabledDirection_;
+@synthesize datasource = datasource_;
+@synthesize isHorizontalEndless;
+@synthesize isVerticalEndless;
 
 
 - (void)dealloc {
@@ -31,54 +32,46 @@
     [leftView_ release], leftView_ = nil;
     [topView_ release], topView_ = nil;
     [bottomView_ release], bottomView_ = nil;
-    [scrollView_ release], scrollView_ = nil;
     [super dealloc];
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    self.scrollView = nil;
-
-}
-
-- (id)initWithScrollViewWidth:(int)aScrollViewWidth scrollViewHeight:(int)aScrollViewHeight isHorizontalEndless:(BOOL)hEndless isVerticalEndLess:(BOOL)vEndless enabledScrollDirection:(EnabledScrollDirection) enabledDirection
-{
-    self = [super init];
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
     if (self) {
-        enabledDirection_ = enabledDirection;
-        scrollViewWidth_ = aScrollViewWidth;
-        scrollViewHeight_ = aScrollViewHeight;
-        isHorizontalEndless = hEndless;
-        isVerticalEndless = vEndless;
-        [self initViewControllers];
-        [self initObjects];
-
+        scrollViewWidth_ = frame.size.width;
+        scrollViewHeight_ = frame.size.height;
+        enabledDirection_ = EnabledScrollDirectionHorizontal | EnabledScrollDirectionVertical;
+        datasource_ = self;
     }
     return self;
 }
 
-- (void)initObjects {
-    scrollView_ = [[UIScrollView  alloc] initWithFrame:CGRectMake(0, 0, scrollViewWidth_, scrollViewHeight_)];
-    scrollView_.pagingEnabled = YES;
-    scrollView_.showsHorizontalScrollIndicator = NO;
-    scrollView_.showsVerticalScrollIndicator = NO;
-    scrollView_.scrollsToTop = NO;
-    scrollView_.delegate = self;
+- (void)buildBNScrollView {
+    [self initViews];
+    [self initObjects];
+}
+
+- (void)initObjects {    
+
+    self.pagingEnabled = YES;
+    self.showsHorizontalScrollIndicator = NO;
+    self.showsVerticalScrollIndicator = NO;
+    self.scrollsToTop = NO;
+    self.delegate = self;
 //    Below is comment. Situation is controlled by Datasource
 //    if (enabledDirection_ & (EnabledScrollDirectionHorizontal & EnabledScrollDirectionVertical)) {
-//        scrollView_.contentSize = CGSizeMake(scrollViewWidth_ * [BNScrollViewDatasource numberOfHorizontalPages], scrollViewHeight_ * [BNScrollViewDatasource numberOfVerticalPages]);
+//        self.contentSize = CGSizeMake(scrollViewWidth_ * [datasource_ numberOfHorizontalPages], scrollViewHeight_ * [datasource_ numberOfVerticalPages]);
 //    }
 //    else if(enabledDirection_ & EnabledScrollDirectionHorizontal) {
-//        scrollView_.contentSize = CGSizeMake(scrollViewWidth_ * [BNScrollViewDatasource numberOfHorizontalPages], scrollViewHeight_);
+//        self.contentSize = CGSizeMake(scrollViewWidth_ * [datasource_ numberOfHorizontalPages], scrollViewHeight_);
 //    }
 //    else if(enabledDirection_ & EnabledScrollDirectionVertical) {
-//        scrollView_.contentSize = CGSizeMake(scrollViewWidth_, scrollViewHeight_ * [BNScrollViewDatasource numberOfVerticalPages]);
+//        self.contentSize = CGSizeMake(scrollViewWidth_, scrollViewHeight_ * [datasource_ numberOfVerticalPages]);
 //    }
-    scrollView_.contentSize = CGSizeMake(scrollViewWidth_ * [BNScrollViewDatasource numberOfHorizontalPages], scrollViewHeight_ * [BNScrollViewDatasource numberOfVerticalPages]);
-    scrollView_.directionalLockEnabled = YES;
-    scrollView_.backgroundColor = [UIColor greenColor];
-    scrollView_.scrollEnabled = YES;
+    self.contentSize = CGSizeMake(scrollViewWidth_ * [datasource_ numberOfHorizontalPages], scrollViewHeight_ * [datasource_ numberOfVerticalPages]);
+    self.directionalLockEnabled = YES;
+    self.backgroundColor = [UIColor clearColor];
+    self.scrollEnabled = YES;
     
     if (isHorizontalEndless && isVerticalEndless) {
         currentView_.frame = CGRectMake(scrollViewWidth_, scrollViewHeight_, scrollViewWidth_, scrollViewHeight_);
@@ -92,30 +85,32 @@
     else {
         currentView_.frame = CGRectMake(0, 0, scrollViewWidth_, scrollViewHeight_);
     }
-    scrollView_.contentOffset = CGPointMake(currentView_.frame.origin.x, currentView_.frame.origin.y);
+    self.contentOffset = CGPointMake(currentView_.frame.origin.x, currentView_.frame.origin.y);
 
-    [scrollView_ addSubview:currentView_];
-    [scrollView_ addSubview:leftView_];
-    [scrollView_ addSubview:rightView_];
-    [scrollView_ addSubview:topView_];
-    [scrollView_ addSubview:bottomView_];
+    [self addSubview:currentView_];
+    [self addSubview:leftView_];
+    [self addSubview:rightView_];
+    [self addSubview:topView_];
+    [self addSubview:bottomView_];
 
-//    [self applyAllViewControllerDataForHorizontalPage:0 andVeticalPage:0];
     currentView_.verticalPageNumber = 0;
     currentView_.horizontalPageNumber = 0;
     [self setVisibilityAndFrame];
     
-    [self.view addSubview:scrollView_];
-    
     
 }
 
--(void)initViewControllers {
-    currentView_ = [[BNPageView alloc] initWithFrame:CGRectMake(0, 0, scrollViewWidth_, scrollViewHeight_)];
-    leftView_ = [[BNPageView alloc] initWithFrame:CGRectMake(0, 0, scrollViewWidth_, scrollViewHeight_)];
-    rightView_ = [[BNPageView alloc] initWithFrame:CGRectMake(0, 0, scrollViewWidth_, scrollViewHeight_)];
-    topView_ = [[BNPageView alloc] initWithFrame:CGRectMake(0, 0, scrollViewWidth_, scrollViewHeight_)];
-    bottomView_ = [[BNPageView alloc] initWithFrame:CGRectMake(0, 0, scrollViewWidth_, scrollViewHeight_)];
+-(void)initViews {
+    currentView_ = [[datasource_ resuableScrollPageViewInScrollView:self] retain];
+    if (enabledDirection_ & EnabledScrollDirectionHorizontal) {
+        rightView_ = [[datasource_ resuableScrollPageViewInScrollView:self] retain];
+        leftView_ = [[datasource_ resuableScrollPageViewInScrollView:self] retain];
+    }
+    
+    if (enabledDirection_ & EnabledScrollDirectionVertical) {
+        topView_ = [[datasource_ resuableScrollPageViewInScrollView:self] retain];
+        bottomView_ = [[datasource_ resuableScrollPageViewInScrollView:self] retain];
+    }
 }
 
 #pragma mark - ScrollView Helper
@@ -135,7 +130,7 @@
 
 
 - (CGPoint)centerPointForScrollView {
-    CGPoint point = CGPointMake(scrollView_.contentOffset.x + scrollViewWidth_/2, scrollView_.contentOffset.y + scrollViewHeight_/2);
+    CGPoint point = CGPointMake(self.contentOffset.x + scrollViewWidth_/2, self.contentOffset.y + scrollViewHeight_/2);
     return point;
 }
 
@@ -167,7 +162,7 @@
     return isInside;
 }
 
-- (void)applyViewDataByCurrentViewController {
+- (void)applyViewDataByCurrentView {
     int hPage = currentView_.horizontalPageNumber;
     int vPage = currentView_.verticalPageNumber;
     
@@ -190,7 +185,7 @@
         leftView_.hidden = NO;
     }
     
-    if (rightView_.frame.origin.x >= scrollViewWidth_ * [BNScrollViewDatasource numberOfHorizontalPages]) {
+    if (rightView_.frame.origin.x >= scrollViewWidth_ * [datasource_ numberOfHorizontalPages]) {
         rightView_.hidden = YES;
     }
     else {
@@ -204,14 +199,14 @@
         topView_.hidden = NO;
     }
     
-    if (bottomView_.frame.origin.y >= scrollViewHeight_ * [BNScrollViewDatasource numberOfVerticalPages]) { 
+    if (bottomView_.frame.origin.y >= scrollViewHeight_ * [datasource_ numberOfVerticalPages]) { 
         bottomView_.hidden = YES;
     }
     else {
         bottomView_.hidden = NO;
     }
     
-    [self applyViewDataByCurrentViewController];
+    [self applyViewDataByCurrentView];
     
 }
 
@@ -225,8 +220,8 @@
             [self setVisibilityAndFrame];
         }
         
-        else if (isHorizontalEndless && scrollView_.contentOffset.x > scrollViewWidth_ * 1.5) {
-            scrollView_.contentOffset = CGPointMake(scrollView_.contentOffset.x - scrollViewWidth_, scrollView_.contentOffset.y);
+        else if (isHorizontalEndless && self.contentOffset.x > scrollViewWidth_ * 1.5 && !rightView_.hidden) {
+            self.contentOffset = CGPointMake(self.contentOffset.x - scrollViewWidth_, self.contentOffset.y);
             [self swapForMoveRight]; 
             currentView_.frame = CGRectMake(currentView_.frame.origin.x - scrollViewWidth_, 
                                                            currentView_.frame.origin.y, 
@@ -235,15 +230,15 @@
             [self setVisibilityAndFrame];
         }
         
-        if (!isHorizontalEndless && ![self isViewControllerInsideHorizontalViewRect:rightView_]) {
+        if (!isHorizontalEndless && ![self isViewControllerInsideHorizontalViewRect:rightView_] && !leftView_.hidden) {
             //go to prev, move next to pre
             
             [self swapForMoveLeft];
             [self setVisibilityAndFrame];
         }
         
-        else if (isHorizontalEndless && scrollView_.contentOffset.x < scrollViewWidth_ * 0.5) {
-            scrollView_.contentOffset = CGPointMake(scrollView_.contentOffset.x + scrollViewWidth_, scrollView_.contentOffset.y);
+        else if (isHorizontalEndless && self.contentOffset.x < scrollViewWidth_ * 0.5) {
+            self.contentOffset = CGPointMake(self.contentOffset.x + scrollViewWidth_, self.contentOffset.y);
             [self swapForMoveLeft]; 
             currentView_.frame = CGRectMake(currentView_.frame.origin.x + scrollViewWidth_, 
                                                            currentView_.frame.origin.y, 
@@ -254,13 +249,13 @@
     }
     
     else if (direction == UP || direction == DOWN ) {
-        if (!isVerticalEndless&&![self isViewControllerInsideVerticalViewRect:topView_]) {
+        if (!isVerticalEndless&&![self isViewControllerInsideVerticalViewRect:topView_] && !bottomView_.hidden) {
             [self swapForMoveDown];
             [self setVisibilityAndFrame];
         }
-        else if (isVerticalEndless && scrollView_.contentOffset.y > scrollViewHeight_ * 1.5) {
+        else if (isVerticalEndless && self.contentOffset.y > scrollViewHeight_ * 1.5) {
             
-            scrollView_.contentOffset = CGPointMake(scrollView_.contentOffset.x, scrollView_.contentOffset.y - scrollViewHeight_ );
+            self.contentOffset = CGPointMake(self.contentOffset.x, self.contentOffset.y - scrollViewHeight_ );
             [self swapForMoveDown]; 
             currentView_.frame = CGRectMake(currentView_.frame.origin.x, 
                                                            currentView_.frame.origin.y - scrollViewHeight_, 
@@ -270,14 +265,14 @@
             [self setVisibilityAndFrame];
         }
         
-        if (!isVerticalEndless && ![self isViewControllerInsideVerticalViewRect:bottomView_]) {
+        if (!isVerticalEndless && ![self isViewControllerInsideVerticalViewRect:bottomView_] && !topView_.hidden) {
             [self swapForMoveUp];
             [self setVisibilityAndFrame];
         }
         
-        else if (isVerticalEndless && scrollView_.contentOffset.y < scrollViewHeight_ * 0.5) {
+        else if (isVerticalEndless && self.contentOffset.y < scrollViewHeight_ * 0.5) {
             
-            scrollView_.contentOffset = CGPointMake(scrollView_.contentOffset.x, scrollView_.contentOffset.y + scrollViewHeight_ );
+            self.contentOffset = CGPointMake(self.contentOffset.x, self.contentOffset.y + scrollViewHeight_ );
             [self swapForMoveUp];
             currentView_.frame = CGRectMake(currentView_.frame.origin.x, 
                                                            currentView_.frame.origin.y + scrollViewHeight_, 
@@ -297,16 +292,16 @@
     int horizontalPage = currentView_.horizontalPageNumber;
     
     //go to top, move bottom to top
-    BNPageView *top = topView_;
-    BNPageView *bottom = bottomView_;
-    BNPageView *current = currentView_;
+    UIView<BNScrollPageView> *top = topView_;
+    UIView<BNScrollPageView> *bottom = bottomView_;
+    UIView<BNScrollPageView> *current = currentView_;
     
     currentView_ = top;
     topView_ = bottom;
     bottomView_ = current;
     
     if ((verticalPage = verticalPage -1) < 0) {
-        verticalPage = [BNScrollViewDatasource numberOfVerticalPages] -1;
+        verticalPage = [datasource_ numberOfVerticalPages] -1;
     }
     currentView_.verticalPageNumber = verticalPage;
     currentView_.horizontalPageNumber = horizontalPage;
@@ -317,15 +312,15 @@
     int horizontalPage = currentView_.horizontalPageNumber;
     
     //go to bottom, move top to bottom
-    BNPageView *top = topView_;
-    BNPageView *bottom = bottomView_;
-    BNPageView *current = currentView_;
+    UIView<BNScrollPageView> *top = topView_;
+    UIView<BNScrollPageView> *bottom = bottomView_;
+    UIView<BNScrollPageView> *current = currentView_;
     
     currentView_ = bottom;
     topView_ = current;
     bottomView_ = top;
     
-    if ((verticalPage = verticalPage +1) >= [BNScrollViewDatasource numberOfVerticalPages]) {
+    if ((verticalPage = verticalPage +1) >= [datasource_ numberOfVerticalPages]) {
         verticalPage = 0;
     }
     
@@ -337,16 +332,16 @@
     int verticalPage = currentView_.verticalPageNumber;
     int horizontalPage = currentView_.horizontalPageNumber;
     
-    BNPageView *prev = leftView_;
-    BNPageView *next = rightView_;
-    BNPageView *current = currentView_;
+    UIView<BNScrollPageView> *prev = leftView_;
+    UIView<BNScrollPageView> *next = rightView_;
+    UIView<BNScrollPageView> *current = currentView_;
     
     currentView_ = prev;
     leftView_ = next;
     rightView_ = current;
     
     if ((horizontalPage = horizontalPage -1) < 0) {
-        horizontalPage = [BNScrollViewDatasource numberOfHorizontalPages] -1;
+        horizontalPage = [datasource_ numberOfHorizontalPages] -1;
     }
     currentView_.verticalPageNumber = verticalPage;
     currentView_.horizontalPageNumber = horizontalPage;
@@ -356,15 +351,15 @@
     int verticalPage = currentView_.verticalPageNumber;
     int horizontalPage = currentView_.horizontalPageNumber;
     
-    BNPageView *prev = leftView_;
-    BNPageView *next = rightView_;
-    BNPageView *current = currentView_;
+    UIView<BNScrollPageView> *prev = leftView_;
+    UIView<BNScrollPageView> *next = rightView_;
+    UIView<BNScrollPageView> *current = currentView_;
     
     rightView_ = prev;
     currentView_ = next;
     leftView_ = current;
     
-    if ((horizontalPage = horizontalPage +1) >= [BNScrollViewDatasource numberOfHorizontalPages]) {
+    if ((horizontalPage = horizontalPage +1) >= [datasource_ numberOfHorizontalPages]) {
         horizontalPage = 0;
     }
     currentView_.verticalPageNumber = verticalPage;
@@ -375,12 +370,11 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender
 {    
-    CGFloat horizotalDiff = abs(scrollView_.contentOffset.x - lastContentOffset_.x);
-    CGFloat verticalDiff = abs(scrollView_.contentOffset.y - lastContentOffset_.y);
+    CGFloat horizotalDiff = abs(self.contentOffset.x - lastContentOffset_.x);
+    CGFloat verticalDiff = abs(self.contentOffset.y - lastContentOffset_.y);
     
     if (horizotalDiff < verticalDiff && canScrollViewBeginVerticalDragging_) {
-        //NSLog(@"horizotalOffset < verticalOffset");
-        if (scrollView_.contentOffset.y - lastContentOffset_.y >=0) {
+        if (self.contentOffset.y - lastContentOffset_.y >=0) {
             direction = DOWN;
         }
         else {
@@ -388,7 +382,7 @@
         }
     }
     else if (horizotalDiff >= verticalDiff && canScrollViewBeginHorizontalDragging_) {
-        if (scrollView_.contentOffset.x - lastContentOffset_.x >=0) {
+        if (self.contentOffset.x - lastContentOffset_.x >=0) {
             direction = RIGHT;
         }
         else {
@@ -397,10 +391,10 @@
     }
     
     if (direction == RIGHT || direction == LEFT) {
-        scrollView_.contentOffset = CGPointMake(scrollView_.contentOffset.x, lastContentOffset_.y);
+        self.contentOffset = CGPointMake(self.contentOffset.x, lastContentOffset_.y);
     }
     else if (direction == UP || direction == DOWN) {
-        scrollView_.contentOffset = CGPointMake(lastContentOffset_.x, scrollView_.contentOffset.y);
+        self.contentOffset = CGPointMake(lastContentOffset_.x, self.contentOffset.y);
         
     }
     [self setViewcontrollerPosition];
@@ -408,12 +402,12 @@
 }
 
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    lastContentOffset_ = scrollView_.contentOffset;
-    if ((int)scrollView_.contentOffset.x % (int) scrollViewWidth_ == 0) {
+    lastContentOffset_ = self.contentOffset;
+    if ((int)self.contentOffset.x % (int) scrollViewWidth_ == 0) {
         canScrollViewBeginVerticalDragging_ = YES;
     }
     
-    if ((int)scrollView_.contentOffset.y % (int) scrollViewHeight_ == 0) {
+    if ((int)self.contentOffset.y % (int) scrollViewHeight_ == 0) {
         canScrollViewBeginHorizontalDragging_ = YES;
     }
     
@@ -433,4 +427,15 @@
     [self setViewcontrollerPosition];
 }
 
+#pragma mark - BNScrollViewDataSource
+-(int)numberOfVerticalPages {
+    return 0;
+}
+
+-(int)numberOfHorizontalPages {
+    return 0;
+}
+-(UIView<BNScrollPageView> *)resuableScrollPageViewInScrollView:(BNScrollView *)scrollView {
+    return nil;
+}
 @end

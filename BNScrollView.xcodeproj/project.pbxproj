@@ -14,7 +14,7 @@
 		097DA38C14C8EEEF00851D27 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA38B14C8EEEF00851D27 /* main.m */; };
 		097DA39014C8EEEF00851D27 /* BNAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA38F14C8EEEF00851D27 /* BNAppDelegate.m */; };
 		097DA39314C8EEEF00851D27 /* BNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA39214C8EEEF00851D27 /* BNViewController.m */; };
-		097DA3A214C8EFD600851D27 /* BNScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA3A114C8EFD600851D27 /* BNScrollViewController.m */; };
+		097DA3A214C8EFD600851D27 /* BNScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA3A114C8EFD600851D27 /* BNScrollView.m */; };
 		097DA3A514C8F21300851D27 /* BNScrollViewDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA3A414C8F21300851D27 /* BNScrollViewDatasource.m */; };
 		097DA3A814C8FEBF00851D27 /* BNPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 097DA3A714C8FEBF00851D27 /* BNPageView.m */; };
 /* End PBXBuildFile section */
@@ -32,8 +32,8 @@
 		097DA38F14C8EEEF00851D27 /* BNAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNAppDelegate.m; sourceTree = "<group>"; };
 		097DA39114C8EEEF00851D27 /* BNViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNViewController.h; sourceTree = "<group>"; };
 		097DA39214C8EEEF00851D27 /* BNViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNViewController.m; sourceTree = "<group>"; };
-		097DA3A014C8EFD600851D27 /* BNScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BNScrollViewController.h; sourceTree = "<group>"; };
-		097DA3A114C8EFD600851D27 /* BNScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BNScrollViewController.m; sourceTree = "<group>"; };
+		097DA3A014C8EFD600851D27 /* BNScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; path = BNScrollView.h; sourceTree = "<group>"; };
+		097DA3A114C8EFD600851D27 /* BNScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BNScrollView.m; sourceTree = "<group>"; };
 		097DA3A314C8F21300851D27 /* BNScrollViewDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BNScrollViewDatasource.h; sourceTree = "<group>"; };
 		097DA3A414C8F21300851D27 /* BNScrollViewDatasource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BNScrollViewDatasource.m; sourceTree = "<group>"; };
 		097DA3A614C8FEBF00851D27 /* BNPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BNPageView.h; sourceTree = "<group>"; };
@@ -108,8 +108,8 @@
 		097DA39F14C8EFC600851D27 /* BNScrollView */ = {
 			isa = PBXGroup;
 			children = (
-				097DA3A014C8EFD600851D27 /* BNScrollViewController.h */,
-				097DA3A114C8EFD600851D27 /* BNScrollViewController.m */,
+				097DA3A014C8EFD600851D27 /* BNScrollView.h */,
+				097DA3A114C8EFD600851D27 /* BNScrollView.m */,
 				097DA3A314C8F21300851D27 /* BNScrollViewDatasource.h */,
 				097DA3A414C8F21300851D27 /* BNScrollViewDatasource.m */,
 				097DA3A614C8FEBF00851D27 /* BNPageView.h */,
@@ -182,7 +182,7 @@
 				097DA38C14C8EEEF00851D27 /* main.m in Sources */,
 				097DA39014C8EEEF00851D27 /* BNAppDelegate.m in Sources */,
 				097DA39314C8EEEF00851D27 /* BNViewController.m in Sources */,
-				097DA3A214C8EFD600851D27 /* BNScrollViewController.m in Sources */,
+				097DA3A214C8EFD600851D27 /* BNScrollView.m in Sources */,
 				097DA3A514C8F21300851D27 /* BNScrollViewDatasource.m in Sources */,
 				097DA3A814C8FEBF00851D27 /* BNPageView.m in Sources */,
 			);
@@ -288,6 +288,7 @@
 				097DA39E14C8EEEF00851D27 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

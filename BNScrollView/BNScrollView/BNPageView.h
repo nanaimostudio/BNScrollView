@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BNScrollView.h"
 
-@interface BNPageView : UIView {
+@interface BNPageView : UIView<BNScrollPageView> {
     int verticalPageNumber_;
     int horizontalPageNumber_;
     

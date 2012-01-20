@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BNPageView.h"
 typedef enum ScrollDirection {
     NONE = 0,
     RIGHT,
@@ -21,45 +20,53 @@ typedef enum EnabledScrollDirection {
     EnabledScrollDirectionVertical = 2
 }EnabledScrollDirection;
 
-@interface BNScrollViewController : UIViewController <UIScrollViewDelegate, UINavigationControllerDelegate> {
-    BNPageView *currentView_;
-    BNPageView *rightView_;
-    BNPageView *leftView_;
-    BNPageView *topView_;
-    BNPageView *bottomView_;
+@protocol BNScrollPageView;
+@protocol BNScrollViewDatasource;
 
+@interface BNScrollView : UIScrollView <UIScrollViewDelegate> {
+
+    UIView<BNScrollPageView> *currentView_;
+    UIView<BNScrollPageView> *rightView_;
+    UIView<BNScrollPageView> *leftView_;
+    UIView<BNScrollPageView> *topView_;
+    UIView<BNScrollPageView> *bottomView_;
+    
     CGPoint lastContentOffset_;
 
     int scrollViewWidth_;
     int scrollViewHeight_;
     
     ScrollDirection direction; 
-
-    UIScrollView *scrollView_;
     
     BOOL canScrollViewBeginVerticalDragging_;
     BOOL canScrollViewBeginHorizontalDragging_;
     
-    EnabledScrollDirection enabledDirection_;
+    EnabledScrollDirection enabledDirection_; //only used for minimized memory usage, behavier is controlled by datasource
     
     BOOL isHorizontalEndless;
     BOOL isVerticalEndless;
+    
+    NSObject<BNScrollViewDatasource> *datasource_;
 }
 
-@property (nonatomic, retain) UIScrollView *scrollView;
 @property (nonatomic, assign) EnabledScrollDirection enabledDirection;
+@property (nonatomic, assign) NSObject<BNScrollViewDatasource> *datasource;
+@property (nonatomic, assign, getter=isHorizontalEndless) BOOL isHorizontalEndless;
+@property (nonatomic, assign, getter=isVerticalEndless) BOOL isVerticalEndless;
 
-- (id)initWithScrollViewWidth:(int)aScrollViewWidth scrollViewHeight:(int)aScrollViewHeight isHorizontalEndless:(BOOL)hEndless isVerticalEndLess:(BOOL)vEndless enabledScrollDirection:(EnabledScrollDirection) enabledDirection;
+- (void)buildBNScrollView;
 @end
 
 @protocol BNScrollPageView <NSObject>
+@required
 -(void)applyViewDataWithHorizontalPage:(int)hPage andVerticalPage:(int)vPage;
+@property (nonatomic, assign) int verticalPageNumber;
+@property (nonatomic, assign) int horizontalPageNumber;
 @end
 
 @protocol BNScrollViewDatasource <NSObject>
 @required
 -(int)numberOfHorizontalPages;
 -(int)numberOfVerticalPages;
--(UIView<BNScrollPageView>*) resuableScrollPageView;
+-(UIView<BNScrollPageView>*) resuableScrollPageViewInScrollView:(BNScrollView*) scrollView ;
 @end
-

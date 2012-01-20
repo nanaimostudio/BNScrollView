@@ -7,8 +7,9 @@
 //
 
 #import "BNViewController.h"
-#import "BNScrollViewController.h"
+#import "BNScrollView.h"
 #import "BNPageView.h"
+#import "BNScrollViewDatasource.h"
 @implementation BNViewController
 
 - (void)didReceiveMemoryWarning
@@ -102,30 +103,30 @@
     }
     switch (indexPath.row) {
         case 0: {
-            BNScrollViewController *viewController = [[BNScrollViewController alloc] initWithScrollViewWidth:pageWidth scrollViewHeight:pageHeight isHorizontalEndless:YES isVerticalEndLess:YES enabledScrollDirection:EnabledScrollDirectionVertical | EnabledScrollDirectionHorizontal];
+            UIViewController *viewController = [[UIViewController alloc] init];
+            BNScrollView *scrollView = [[BNScrollView alloc] initWithFrame:CGRectMake(0, 700, 400, 100)];
+            scrollView.datasource = [BNScrollViewDatasource sharedInstance];
+            scrollView.isVerticalEndless = YES;
+            scrollView.isHorizontalEndless = YES;
+            [scrollView buildBNScrollView];
+            [viewController.view addSubview:scrollView];
             [self.navigationController pushViewController:viewController animated:YES];
             [viewController release];
             break;
         }
         
         case 1: {
-            BNScrollViewController *viewController = [[BNScrollViewController alloc] initWithScrollViewWidth:pageWidth scrollViewHeight:pageHeight isHorizontalEndless:NO isVerticalEndLess:YES enabledScrollDirection:EnabledScrollDirectionVertical | EnabledScrollDirectionHorizontal];
-            [self.navigationController pushViewController:viewController animated:YES];
-            [viewController release];
+
             break;
         }
             
         case 2: {
-            BNScrollViewController *viewController = [[BNScrollViewController alloc] initWithScrollViewWidth:pageWidth scrollViewHeight:pageHeight isHorizontalEndless:YES isVerticalEndLess:NO enabledScrollDirection:EnabledScrollDirectionVertical | EnabledScrollDirectionHorizontal];
-            [self.navigationController pushViewController:viewController animated:YES];
-            [viewController release];
+
             break;
         }
             
         case 3: {
-            BNScrollViewController *viewController = [[BNScrollViewController alloc] initWithScrollViewWidth:pageWidth scrollViewHeight:pageHeight isHorizontalEndless:NO isVerticalEndLess:NO enabledScrollDirection: EnabledScrollDirectionVertical | EnabledScrollDirectionHorizontal];
-            [self.navigationController pushViewController:viewController animated:YES];
-            [viewController release];
+
             break;
         }
         default:

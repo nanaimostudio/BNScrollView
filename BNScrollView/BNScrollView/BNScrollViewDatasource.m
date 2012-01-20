@@ -7,8 +7,11 @@
 //
 
 #import "BNScrollViewDatasource.h"
-
+#import "BNPageView.h"
 @implementation BNScrollViewDatasource
+@synthesize numberOfHorizontalPages;
+@synthesize numberOfVerticalPages;
+
 + (id)sharedInstance
 {
 	static id manager = nil;
@@ -22,11 +25,24 @@
     return manager;
 }
 
+- (id)init {
+    self = [super init];
+    if (self) {
+        numberOfHorizontalPages = 4;
+        numberOfVerticalPages = 4;
+    }
+    return self;
+}
 +(int)numberOfHorizontalPages {
-    return 4;
+    return [[BNScrollViewDatasource sharedInstance] numberOfHorizontalPages];
 }
 
 +(int)numberOfVerticalPages {
-    return 4;
+    return [[BNScrollViewDatasource sharedInstance] numberOfVerticalPages];
 }
+
+-(UIView<BNScrollPageView> *)resuableScrollPageViewInScrollView:(BNScrollView *)scrollView {
+    return [[[BNPageView alloc] initWithFrame:scrollView.frame] autorelease];
+}
+
 @end
