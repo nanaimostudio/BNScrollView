@@ -3,11 +3,11 @@
 //  BNScrollView
 //
 //  Created by zitao xiong on 1/19/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012 nanaimostudio.com. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "BNPageViewController.h"
+#import "BNPageView.h"
 typedef enum ScrollDirection {
     NONE = 0,
     RIGHT,
@@ -22,11 +22,11 @@ typedef enum EnabledScrollDirection {
 }EnabledScrollDirection;
 
 @interface BNScrollViewController : UIViewController <UIScrollViewDelegate, UINavigationControllerDelegate> {
-    BNPageViewController *currentViewController_;
-    BNPageViewController *nextViewController_;
-    BNPageViewController *prevViewController_;
-    BNPageViewController *topViewController_;
-    BNPageViewController *bottomViewController_;
+    BNPageView *currentView_;
+    BNPageView *rightView_;
+    BNPageView *leftView_;
+    BNPageView *topView_;
+    BNPageView *bottomView_;
 
     CGPoint lastContentOffset_;
 

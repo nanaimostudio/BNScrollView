@@ -3,7 +3,7 @@
 //  BNScrollView
 //
 //  Created by zitao xiong on 1/19/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012 nanaimostudio.com. All rights reserved.
 //
 
 #import "BNAppDelegate.h"
@@ -26,11 +26,9 @@
 {
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        self.viewController = [[[BNViewController alloc] initWithNibName:@"BNViewController_iPhone" bundle:nil] autorelease];
-    } else {
-        self.viewController = [[[BNViewController alloc] initWithNibName:@"BNViewController_iPad" bundle:nil] autorelease];
-    }
+    BNViewController *viewController = [[BNViewController alloc] init];
+    self.viewController = [[[UINavigationController alloc] initWithRootViewController:viewController] autorelease];
+    
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
     return YES;
