@@ -24,6 +24,8 @@
 @synthesize datasource = datasource_;
 @synthesize isHorizontalEndless;
 @synthesize isVerticalEndless;
+@synthesize scrollViewWidth = scrollViewWidth_;
+@synthesize scrollViewHeight = scrollViewHeight_;
 
 
 - (void)dealloc {
@@ -38,8 +40,6 @@
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        scrollViewWidth_ = frame.size.width;
-        scrollViewHeight_ = frame.size.height;
         enabledDirection_ = EnabledScrollDirectionHorizontal | EnabledScrollDirectionVertical;
         datasource_ = self;
     }
@@ -51,6 +51,14 @@
     [self initObjects];
 }
 
+-(float)scrollViewWidth {
+    return self.frame.size.width;
+}
+
+-(float)scrollViewHeight {
+    return self.frame.size.height;
+}
+
 - (void)initObjects {    
 
     self.pagingEnabled = YES;
@@ -58,34 +66,11 @@
     self.showsVerticalScrollIndicator = NO;
     self.scrollsToTop = NO;
     self.delegate = self;
-//    Below is comment. Situation is controlled by Datasource
-//    if (enabledDirection_ & (EnabledScrollDirectionHorizontal & EnabledScrollDirectionVertical)) {
-//        self.contentSize = CGSizeMake(scrollViewWidth_ * [datasource_ numberOfHorizontalPages], scrollViewHeight_ * [datasource_ numberOfVerticalPages]);
-//    }
-//    else if(enabledDirection_ & EnabledScrollDirectionHorizontal) {
-//        self.contentSize = CGSizeMake(scrollViewWidth_ * [datasource_ numberOfHorizontalPages], scrollViewHeight_);
-//    }
-//    else if(enabledDirection_ & EnabledScrollDirectionVertical) {
-//        self.contentSize = CGSizeMake(scrollViewWidth_, scrollViewHeight_ * [datasource_ numberOfVerticalPages]);
-//    }
-    self.contentSize = CGSizeMake(scrollViewWidth_ * [datasource_ numberOfHorizontalPages], scrollViewHeight_ * [datasource_ numberOfVerticalPages]);
     self.directionalLockEnabled = YES;
     self.backgroundColor = [UIColor clearColor];
     self.scrollEnabled = YES;
     
-    if (isHorizontalEndless && isVerticalEndless) {
-        currentView_.frame = CGRectMake(scrollViewWidth_, scrollViewHeight_, scrollViewWidth_, scrollViewHeight_);
-    }
-    else if (isHorizontalEndless) {
-        currentView_.frame = CGRectMake(scrollViewWidth_, 0, scrollViewWidth_, scrollViewHeight_);
-    }
-    else if (isVerticalEndless) {
-        currentView_.frame = CGRectMake(0, scrollViewHeight_, scrollViewWidth_, scrollViewHeight_);
-    }
-    else {
-        currentView_.frame = CGRectMake(0, 0, scrollViewWidth_, scrollViewHeight_);
-    }
-    self.contentOffset = CGPointMake(currentView_.frame.origin.x, currentView_.frame.origin.y);
+    [self resetAllViews];
 
     [self addSubview:currentView_];
     [self addSubview:leftView_];
@@ -97,8 +82,67 @@
     currentView_.horizontalPageNumber = 0;
     [self setVisibilityAndFrame];
     [currentView_ applyViewDataWithHorizontalPage:currentView_.horizontalPageNumber andVerticalPage:currentView_.verticalPageNumber];
+}
 
+-(void)resetAllViews {
+    if (!isVerticalEndless && !isHorizontalEndless) {
+        self.contentSize = CGSizeMake(self.scrollViewWidth * [datasource_ numberOfHorizontalPages], self.scrollViewHeight * [datasource_ numberOfVerticalPages]);
+    }
+
+    else if (isHorizontalEndless && isVerticalEndless) {        
+        if ([datasource_ numberOfHorizontalPages] < 3 && [datasource_ numberOfVerticalPages] < 3) {
+            self.contentSize = CGSizeMake(self.scrollViewWidth * 3, self.scrollViewHeight * 3);
+        }
+        else if ([datasource_ numberOfVerticalPages] < 3) {
+            self.contentSize = CGSizeMake(self.scrollViewWidth * [datasource_ numberOfHorizontalPages], self.scrollViewHeight * 3);
+        }
+        else if ([datasource_ numberOfHorizontalPages] < 3) {
+            self.contentSize = CGSizeMake(self.scrollViewWidth * 3, self.scrollViewHeight * [datasource_ numberOfVerticalPages]);
+        }
+        else {
+            self.contentSize = CGSizeMake(self.scrollViewWidth * [datasource_ numberOfHorizontalPages], self.scrollViewHeight * [datasource_ numberOfVerticalPages]);
+        }
+        
+    }
+    else if (isHorizontalEndless) {
+        if ([datasource_ numberOfHorizontalPages] < 3) {
+            self.contentSize = CGSizeMake(self.scrollViewWidth * 3, self.scrollViewHeight * [datasource_ numberOfVerticalPages]);
+        }
+        else {
+            self.contentSize = CGSizeMake(self.scrollViewWidth * [datasource_ numberOfHorizontalPages], self.scrollViewHeight * [datasource_ numberOfVerticalPages]);
+        }
+    }
+    else if (isVerticalEndless) {
+        if ([datasource_ numberOfVerticalPages] < 3) {
+            self.contentSize = CGSizeMake(self.scrollViewWidth * [datasource_ numberOfHorizontalPages], self.scrollViewHeight * 3);
+        }
+        else {
+            self.contentSize = CGSizeMake(self.scrollViewWidth * [datasource_ numberOfHorizontalPages], self.scrollViewHeight * [datasource_ numberOfVerticalPages]);
+        }
+    }
+    else {
+        NSAssert(false, @"ERROR, should not reach here");
+    }
+//----------------------------- 
+    if (!isVerticalEndless && !isHorizontalEndless) {
+        currentView_.frame = CGRectMake(0, 0, self.scrollViewWidth, self.scrollViewHeight);
+    }
     
+    else if (isHorizontalEndless && isVerticalEndless) {
+        currentView_.frame = CGRectMake(self.scrollViewWidth, self.scrollViewHeight, self.scrollViewWidth, self.scrollViewHeight);
+    }
+    else if (isHorizontalEndless) {
+        currentView_.frame = CGRectMake(self.scrollViewWidth, 0, self.scrollViewWidth, self.scrollViewHeight);
+    }
+    else if (isVerticalEndless) {
+        currentView_.frame = CGRectMake(0, self.scrollViewHeight, self.scrollViewWidth, self.scrollViewHeight);
+    }
+    else {
+        NSAssert(false, @"ERROR, should not reach here");
+    }
+    self.contentOffset = CGPointMake(currentView_.frame.origin.x, currentView_.frame.origin.y);
+
+    [self setVisibilityAndFrame];
 }
 
 -(void)initViews {
@@ -138,42 +182,42 @@
         bottomPage = 0;
     }
     
-    if (currentView_.horizontalPageNumber != hPage || currentView_.verticalPageNumber != vPage) {
-        [currentView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage];
-    }
+    //if (currentView_.horizontalPageNumber != hPage || currentView_.verticalPageNumber != vPage) {
+    [currentView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:vPage];
+    //}
     
     if (enabledDirection_ & EnabledScrollDirectionHorizontal) {
-        if (leftView_.horizontalPageNumber != leftPage || leftView_.verticalPageNumber != vPage) {
+        //if (leftView_.horizontalPageNumber != leftPage || leftView_.verticalPageNumber != vPage) {
             leftView_.horizontalPageNumber = leftPage;
             leftView_.verticalPageNumber = vPage;
             [leftView_ applyViewDataWithHorizontalPage:leftPage andVerticalPage:vPage];
-        }
+        //}
         
-        if (rightView_.horizontalPageNumber != rightPage || rightView_.verticalPageNumber != vPage) {
+       // if (rightView_.horizontalPageNumber != rightPage || rightView_.verticalPageNumber != vPage) {
             rightView_.horizontalPageNumber = rightPage;
             rightView_.verticalPageNumber = vPage;
             [rightView_ applyViewDataWithHorizontalPage:rightPage andVerticalPage:vPage];
-        }
+       // }
     }
     
     if (enabledDirection_ & EnabledScrollDirectionVertical) {
-        if (topView_.horizontalPageNumber != hPage || topView_.verticalPageNumber != topPage) {
+        //if (topView_.horizontalPageNumber != hPage || topView_.verticalPageNumber != topPage) {
             topView_.horizontalPageNumber = hPage;
             topView_.verticalPageNumber = topPage;
             [topView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:topPage];
-        }
+        //}
         
-        if (bottomView_.horizontalPageNumber != hPage || bottomView_.verticalPageNumber != bottomPage) {
+        //if (bottomView_.horizontalPageNumber != hPage || bottomView_.verticalPageNumber != bottomPage) {
             bottomView_.verticalPageNumber = bottomPage;
             bottomView_.horizontalPageNumber = hPage;
             [bottomView_ applyViewDataWithHorizontalPage:hPage andVerticalPage:bottomPage];
-        }
+        //}
     }
 }
 
 
 - (CGPoint)centerPointForScrollView {
-    CGPoint point = CGPointMake(self.contentOffset.x + scrollViewWidth_/2, self.contentOffset.y + scrollViewHeight_/2);
+    CGPoint point = CGPointMake(self.contentOffset.x + self.scrollViewWidth/2, self.contentOffset.y + self.scrollViewHeight/2);
     return point;
 }
 
@@ -181,11 +225,11 @@
     CGPoint centerPoint = [self centerPointForScrollView];
     
     BOOL isInside = YES;
-    if (viewController.frame.origin.x > centerPoint.x + scrollViewWidth_) {
+    if (viewController.frame.origin.x > centerPoint.x + self.scrollViewWidth) {
         isInside = NO;
     }
     
-    if (viewController.frame.origin.x + scrollViewWidth_ < centerPoint.x - scrollViewWidth_) {
+    if (viewController.frame.origin.x + self.scrollViewWidth < centerPoint.x - self.scrollViewWidth) {
         isInside = NO;
     }
     return isInside;
@@ -195,11 +239,11 @@
     CGPoint centerPoint = [self centerPointForScrollView];
     
     BOOL isInside = YES;
-    if (viewController.frame.origin.y > centerPoint.y + scrollViewHeight_) {
+    if (viewController.frame.origin.y > centerPoint.y + self.scrollViewHeight) {
         isInside = NO;
     }
     
-    if (viewController.frame.origin.y + scrollViewHeight_ < centerPoint.y - scrollViewHeight_) {
+    if (viewController.frame.origin.y + self.scrollViewHeight < centerPoint.y - self.scrollViewHeight) {
         isInside = NO;
     }
     return isInside;
@@ -215,43 +259,43 @@
 - (void)setVisibilityAndFrame {
     leftView_.frame = CGRectMake(currentView_.frame.origin.x - currentView_.frame.size.width, 
                                  currentView_.frame.origin.y, 
-                                 scrollViewWidth_, scrollViewHeight_);
+                                 self.scrollViewWidth, self.scrollViewHeight);
     rightView_.frame = CGRectMake(currentView_.frame.origin.x + currentView_.frame.size.width,
                                   currentView_.frame.origin.y, 
-                                  scrollViewWidth_, 
-                                  scrollViewHeight_);
+                                  self.scrollViewWidth, 
+                                  self.scrollViewHeight);
     topView_.frame = CGRectMake(currentView_.frame.origin.x, 
                                 currentView_.frame.origin.y-currentView_.frame.size.height,
-                                scrollViewWidth_,
-                                scrollViewHeight_);
+                                self.scrollViewWidth,
+                                self.scrollViewHeight);
     
     bottomView_.frame = CGRectMake(currentView_.frame.origin.x, 
                                    currentView_.frame.origin.y+currentView_.frame.size.height,
-                                   scrollViewWidth_, 
-                                   scrollViewHeight_);
+                                   self.scrollViewWidth, 
+                                   self.scrollViewHeight);
     
-    if (leftView_.frame.origin.x < 0) {
+    if (leftView_.frame.origin.x < 0 && !isHorizontalEndless) {
         leftView_.hidden = YES;
     }
     else {
         leftView_.hidden = NO;
     }
     
-    if (rightView_.frame.origin.x >= scrollViewWidth_ * [datasource_ numberOfHorizontalPages]) {
+    if (rightView_.frame.origin.x >= self.scrollViewWidth * [datasource_ numberOfHorizontalPages] && !isHorizontalEndless) {
         rightView_.hidden = YES;
     }
     else {
         rightView_.hidden = NO;
     }
     
-    if (topView_.frame.origin.y < 0) { 
+    if (topView_.frame.origin.y < 0 && !isVerticalEndless) { 
         topView_.hidden = YES;
     }
     else {
         topView_.hidden = NO;
     }
     
-    if (bottomView_.frame.origin.y >= scrollViewHeight_ * [datasource_ numberOfVerticalPages]) { 
+    if (bottomView_.frame.origin.y >= self.scrollViewHeight * [datasource_ numberOfVerticalPages] && !isVerticalEndless) { 
         bottomView_.hidden = YES;
     }
     else {
@@ -272,10 +316,10 @@
             [self setVisibilityAndFrame];
         }
         
-        else if (isHorizontalEndless && self.contentOffset.x > scrollViewWidth_ * 1.5) {
-            self.contentOffset = CGPointMake(self.contentOffset.x - scrollViewWidth_, self.contentOffset.y);
+        else if (isHorizontalEndless && self.contentOffset.x > self.scrollViewWidth * 1.5) {
+            self.contentOffset = CGPointMake(self.contentOffset.x - self.scrollViewWidth, self.contentOffset.y);
             [self swapForMoveRight]; 
-            currentView_.frame = CGRectMake(currentView_.frame.origin.x - scrollViewWidth_, 
+            currentView_.frame = CGRectMake(currentView_.frame.origin.x - self.scrollViewWidth, 
                                                            currentView_.frame.origin.y, 
                                                            currentView_.frame.size.width, 
                                                            currentView_.frame.size.height);
@@ -289,10 +333,10 @@
             [self setVisibilityAndFrame];
         }
         
-        else if (isHorizontalEndless && self.contentOffset.x < scrollViewWidth_ * 0.5) {
-            self.contentOffset = CGPointMake(self.contentOffset.x + scrollViewWidth_, self.contentOffset.y);
+        else if (isHorizontalEndless && self.contentOffset.x < self.scrollViewWidth * 0.5) {
+            self.contentOffset = CGPointMake(self.contentOffset.x + self.scrollViewWidth, self.contentOffset.y);
             [self swapForMoveLeft]; 
-            currentView_.frame = CGRectMake(currentView_.frame.origin.x + scrollViewWidth_, 
+            currentView_.frame = CGRectMake(currentView_.frame.origin.x + self.scrollViewWidth, 
                                                            currentView_.frame.origin.y, 
                                                            currentView_.frame.size.width, 
                                                            currentView_.frame.size.height);
@@ -305,12 +349,12 @@
             [self swapForMoveDown];
             [self setVisibilityAndFrame];
         }
-        else if (isVerticalEndless && self.contentOffset.y > scrollViewHeight_ * 1.5) {
+        else if (isVerticalEndless && self.contentOffset.y > self.scrollViewHeight * 1.5) {
             
-            self.contentOffset = CGPointMake(self.contentOffset.x, self.contentOffset.y - scrollViewHeight_ );
+            self.contentOffset = CGPointMake(self.contentOffset.x, self.contentOffset.y - self.scrollViewHeight );
             [self swapForMoveDown]; 
             currentView_.frame = CGRectMake(currentView_.frame.origin.x, 
-                                                           currentView_.frame.origin.y - scrollViewHeight_, 
+                                                           currentView_.frame.origin.y - self.scrollViewHeight, 
                                                            currentView_.frame.size.width, 
                                                            currentView_.frame.size.height);
             
@@ -322,12 +366,12 @@
             [self setVisibilityAndFrame];
         }
         
-        else if (isVerticalEndless && self.contentOffset.y < scrollViewHeight_ * 0.5) {
+        else if (isVerticalEndless && self.contentOffset.y < self.scrollViewHeight * 0.5) {
             
-            self.contentOffset = CGPointMake(self.contentOffset.x, self.contentOffset.y + scrollViewHeight_ );
+            self.contentOffset = CGPointMake(self.contentOffset.x, self.contentOffset.y + self.scrollViewHeight );
             [self swapForMoveUp];
             currentView_.frame = CGRectMake(currentView_.frame.origin.x, 
-                                                           currentView_.frame.origin.y + scrollViewHeight_, 
+                                                           currentView_.frame.origin.y + self.scrollViewHeight, 
                                                            currentView_.frame.size.width, 
                                                            currentView_.frame.size.height);
             
@@ -455,11 +499,11 @@
 
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     lastContentOffset_ = self.contentOffset;
-    if ((int)self.contentOffset.x % (int) scrollViewWidth_ == 0) {
+    if ((int)self.contentOffset.x % (int) self.scrollViewWidth == 0) {
         canScrollViewBeginVerticalDragging_ = YES;
     }
     
-    if ((int)self.contentOffset.y % (int) scrollViewHeight_ == 0) {
+    if ((int)self.contentOffset.y % (int) self.scrollViewHeight == 0) {
         canScrollViewBeginHorizontalDragging_ = YES;
     }
     

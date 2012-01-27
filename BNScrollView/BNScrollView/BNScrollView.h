@@ -33,8 +33,8 @@ typedef enum EnabledScrollDirection {
     
     CGPoint lastContentOffset_;
 
-    int scrollViewWidth_;
-    int scrollViewHeight_;
+    float scrollViewWidth_;
+    float scrollViewHeight_;
     
     ScrollDirection direction; 
     
@@ -53,8 +53,11 @@ typedef enum EnabledScrollDirection {
 @property (nonatomic, assign) NSObject<BNScrollViewDatasource> *datasource;
 @property (nonatomic, assign, getter=isHorizontalEndless) BOOL isHorizontalEndless;
 @property (nonatomic, assign, getter=isVerticalEndless) BOOL isVerticalEndless;
+@property (nonatomic, assign) float scrollViewWidth;
+@property (nonatomic, assign) float scrollViewHeight;
 
 - (void)buildBNScrollView;
+-(void)resetAllViews;
 @end
 
 @protocol BNScrollPageView <NSObject>
