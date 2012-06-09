@@ -45,4 +45,7 @@
     return [[[BNPageView alloc] initWithFrame:scrollView.frame] autorelease];
 }
 
+-(void)scrollView:(BNScrollView *)scrollView applyDataOn:(UIView<BNScrollPageView> *)view withHorizontalPage:(int)hPage withVerticalPage:(int)vPage {
+    ((BNPageView*)view).pageLabel.text = [NSString stringWithFormat:@"%d:Horizontal, Vertical:%d",hPage,vPage];
+}
 @end

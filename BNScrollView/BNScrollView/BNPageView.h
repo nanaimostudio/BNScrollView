@@ -18,6 +18,4 @@
 @property (nonatomic, assign) int verticalPageNumber;
 @property (nonatomic, assign) int horizontalPageNumber;
 @property (nonatomic, retain) UILabel *pageLabel;
-
--(void) applyViewDataWithHorizontalPage:(int)hPage andVerticalPage:(int)vPage;
 @end
